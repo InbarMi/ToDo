@@ -4,10 +4,26 @@
 
 -- TODO: add your tables structure
 
-DROP TABLE IF EXISTS samples;
+DROP TABLE IF EXISTS tasks;
 
-CREATE TABLE samples
+CREATE TABLE tasks
 (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    tbd         VARCHAR(20)
+    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+    description             VARCHAR(50),
+    due_date                DATE,
+    due_time                TIME,
+    status                  VARCHAR(20)
+);
+
+DROP TABLE IF EXISTS subtasks;
+
+CREATE TABLE subtasks
+(
+    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+    main_task               INTEGER,
+    description             VARCHAR(50),
+    due_date                DATE,
+    due_time                TIME,
+    status                  VARCHAR(20),
+    FOREIGN KEY (main_task) REFERENCES tasks(id)
 );
