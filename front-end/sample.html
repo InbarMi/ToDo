@@ -5,12 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Sample</title>
+    <title>ToDoList</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
-    <h1>Sample (feel free to rename this file, or delete it)</h1>
+    <h1>MY TO DO LIST</h1>
+    <div class="add-task-container">
+        <button id="add-task-button" type="button" onclick=addTask()>Add Task</button>
+    </div>
+
+    <div class="task-board">
+        <div class="column-todo">
+            <h3>TO DO</h3>
+        </div>
+        <div class="column-in-progress">
+            <h3>IN PROGRESS</h3>
+        </div>
+        <div class="column-complete">
+            <h3>COMPLETE</h3>
+        </div>
+    </div>
 
     <p><a href="index.html">Back to index</a></p>
 

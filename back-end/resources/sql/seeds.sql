@@ -3,9 +3,9 @@
 
 
 -- TODO: Insert some sample rows to populate the tables
-INSERT INTO samples(id, tbd)
-VALUES
-    (1, 'value1'),
-    (2, 'value2'),
-    (3, 'value3'),
-    (4, 'value4');
+-- INSERT INTO tasks(id, tbd)
+-- VALUES
+--     (1, 'value1'),
+--     (2, 'value2'),
+--     (3, 'value3'),
+--     (4, 'value4');

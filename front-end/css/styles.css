@@ -4,5 +4,52 @@ Absolutely, the team can create as many .css files as needed.
 */
 
 body {
+    background-color: white;
     font: normal 10px Verdana, Arial, sans-serif;
+}
+
+h1 {
+    color: rgb(200, 150, 220);
+    text-align: center;
+}
+
+.task-board {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    text-align: center;
+    color: white;
+}
+
+.column-todo {
+    background-color: rgba(240, 113, 147, 0.5);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.column-in-progress {
+    background-color: rgba(237, 171, 121, 0.5);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.column-complete {
+    background-color: rgba(121, 237, 162, 0.5);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.add-task-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+}
+
+#add-task-button {
+    background-color: rgba(200, 150, 220, 0.5);
+    border: none;
+    padding: 10px;
+    color: white;
+    margin: 10px;
+    border-radius: 10px;
 }
