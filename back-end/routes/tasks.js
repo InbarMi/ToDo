@@ -12,28 +12,43 @@ function addTask(event) {
     var htmlContent = `
         <html>
         <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+            <link rel="stylesheet" href="../../front-end/css/styles.css">
             <title>Add Task Form</title>
         </head>
         <body>
             <h1>Add New Task</h1>
                 <form id="task-form">
-                    <input type="text" id="task-name" name="task-name" required>
-                    <label for="task-name">Task Name:</label>
+                    <div class="input">
+                        <label for="task-name">Task Name</label>
+                        <input type="text" id="task-name" name="task-name" required>
+                    </div>
+                    
+                    <div class="input">
+                        <label for="task-description">Task Description</label>
+                        <textarea id="task-description" name="task-description" rows="4" cols="50"></textarea>                        
+                    </div>
 
-                    <input type="text" id="task-description" name="task-description">
-                    <label for="task-description">Task Description</label>
+                    <div class="input">
+                        <label for="due-date">Due Date</label>
+                        <input type="date" id="due-date" name="due-date">                        
+                    </div>
 
-                    <input type="date" id="due-date" name="due-date">
-                    <label for="due-date">Due Date</label>
+                    <div class="input">
+                        <label for="due-time">Due Time</label>
+                        <input type="time" id="due-time" name="due-time">
+                    </div>
 
-                    <input type="time" id="due-time" name="due-time">
-                    <label for="due-time">Due Time</label>
-
-                    <select id="status" name="status" required>
-                        <option value="todo">To Do</option>
-                        <option value="inprogress">In Progress</option>
-                        <option value="complete">Complete</option>
-                    </select>
+                    <div class="input">
+                        <label for="status">Status</label>
+                        <select id="status" name="status" required>
+                            <option value="todo">To Do</option>
+                            <option value="inprogress">In Progress</option>
+                            <option value="complete">Complete</option>
+                        </select>
+                    </div>
 
                     <button type="submit">Add Task To Board</button>
                 </form>
