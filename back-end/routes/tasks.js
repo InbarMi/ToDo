@@ -50,7 +50,7 @@ function addTask(event) {
                         </select>
                     </div>
 
-                    <button type="submit">Add Task To Board</button>
+                    <button type="submit" id="submit-task-button">Add Task To Board</button>
                 </form>
             <button onclick="window.close();">Close</button>
         </body>
