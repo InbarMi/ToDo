@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS tasks;
 CREATE TABLE tasks
 (
     id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+    name                    VARCHAR(30),
     description             VARCHAR(50),
     due_date                DATE,
     due_time                TIME,
@@ -21,6 +22,7 @@ CREATE TABLE subtasks
 (
     id                      INTEGER PRIMARY KEY AUTOINCREMENT,
     main_task               INTEGER,
+    name                    VARCHAR(30),
     description             VARCHAR(50),
     due_date                DATE,
     due_time                TIME,
