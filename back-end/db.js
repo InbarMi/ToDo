@@ -2,12 +2,7 @@ const util = require("util");
 const fs = require("fs");
 const sqlite3 = require('sqlite3').verbose();
 
-// TODO: create a SQLite data source in IntelliJ with the name: "./back-end/cs208_project.sqlite"
-
-// Do not change this name. The 'cs208_project.sqlite' will be created in the same folder as db.js
-const SQLITE_FILE_NAME = "cs208_project.sqlite";
-
-
+const SQLITE_FILE_NAME = "todo.sqlite";
 let db;
 
 // If the run environment is 'test', we create an ephemeral (in memory) SQLite database that will
@@ -52,7 +47,7 @@ else
     // This is the default environment (e.g., 'development')
 
     // Create a connection to the SQLite database file specified in SQLITE_FILE_NAME
-    db = new sqlite3.Database("./" + SQLITE_FILE_NAME, function(err)
+    db = new sqlite3.Database("../" + SQLITE_FILE_NAME, function(err)
     {
         if (err)
         {
@@ -66,72 +61,32 @@ else
     });
 }
 
-
-function getAllSamples()
-{
-    return new Promise(function(resolve, reject)
-    {
-        db.serialize(function()
-        {
-            // note the backticks ` which allow us to write a multiline string
-            const sql =
-                `SELECT id, tbd 
-                 FROM samples;`;
-
-            let listOfSamples = []; // initialize an empty array
-
-            // print table header
-            printTableHeader(["id", "tbd"]);
-
-            const callbackToProcessEachRow = function(err, row)
-            {
-                if (err)
-                {
+/**
+ *
+ */
+async function insertNewTask(taskName, description, due_date, due_time, status) {
+    try {
+        const result = await new Promise((resolve, reject) => {
+            const sql = `
+                INSERT INTO tasks(name, description, due_date, due_time, status)
+                VALUES (?,?,?,?,?);`;
+            db.run(sql, [taskName, description, due_date, due_time, status], function (err) {
+                if (err) {
                     reject(err);
+                } else {
+                    resolve({lastID: this.lastID, changes: this.changes});
                 }
-
-                // extract the values from the current row
-                const id = row.id;
-                const tbd = row.tbd;
-
-                // print the results of the current row
-                console.log(util.format("| %d | %s |", id, tbd));
-
-                const sampleForCurrentRow = {
-                    id: id,
-                    tbd: tbd
-                };
-
-                // add a new element sampleForCurrentRow to the array
-                listOfSamples.push(sampleForCurrentRow);
-            };
-
-            const callbackAfterAllRowsAreProcessed = function()
-            {
-                resolve(listOfSamples);
-            };
-
-            db.each(sql, callbackToProcessEachRow, callbackAfterAllRowsAreProcessed);
+            });
         });
-    });
-}
-
-
-
-function printTableHeader(listOfColumnNames)
-{
-    let buffer = "| ";
-    for (const columnName of listOfColumnNames)
-    {
-        buffer += columnName + " | ";
+        console.log('Task added with ID:', result.lastID);
+        return result;
+    } catch (error) {
+        console.error("Database Error: ", error);
+        throw error;
     }
-    console.log(buffer);
-    console.log("-".repeat(80));
 }
 
-
-// TODO: export the functions that will be used in other files
 // these functions will be available from other files that import this module
 module.exports = {
-    getAllSamples,
+    insertNewTask,
 };

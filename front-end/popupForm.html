@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>New Task</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/tasks.js" defer></script>
+</head>
+
+<div class="popup" id="newTaskForm">
+    <h1>Add New Task</h1>
+    <form id="task-form" action="http://localhost:8080/add-task" method="post">
+        <div class="input">
+            <label for="task-name">Task Name</label>
+            <input type="text" id="task-name" name="task-name" required>
+        </div>
+
+        <div class="input">
+            <label for="task-description">Task Description</label>
+            <textarea id="task-description" name="task-description" rows="4" cols="50"></textarea>
+        </div>
+
+        <div class="input">
+            <label for="due-date">Due Date</label>
+            <input type="date" id="due-date" name="due-date">
+        </div>
+
+        <div class="input">
+            <label for="due-time">Due Time</label>
+            <input type="time" id="due-time" name="due-time">
+        </div>
+
+        <div class="input">
+            <label for="status">Status</label>
+            <select id="status" name="status" required>
+                <option value="todo">To Do</option>
+                <option value="inprogress">In Progress</option>
+                <option value="complete">Complete</option>
+            </select>
+        </div>
+
+        <button type="submit" id="submit-task-button">Add Task To Board</button>
+    </form>
+    <button onclick="window.close();">Close</button>
+    </body>
+</div>
+
+</html>

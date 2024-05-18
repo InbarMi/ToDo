@@ -9,23 +9,9 @@ DROP TABLE IF EXISTS tasks;
 CREATE TABLE tasks
 (
     id                      INTEGER PRIMARY KEY AUTOINCREMENT,
-    name                    VARCHAR(30),
-    description             VARCHAR(50),
+    name                    TEXT NOT NULL,
+    description             TEXT,
     due_date                DATE,
     due_time                TIME,
-    status                  VARCHAR(20)
-);
-
-DROP TABLE IF EXISTS subtasks;
-
-CREATE TABLE subtasks
-(
-    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
-    main_task               INTEGER,
-    name                    VARCHAR(30),
-    description             VARCHAR(50),
-    due_date                DATE,
-    due_time                TIME,
-    status                  VARCHAR(20),
-    FOREIGN KEY (main_task) REFERENCES tasks(id)
+    status                  TEXT NOT NULL
 );
