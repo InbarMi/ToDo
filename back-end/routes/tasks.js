@@ -33,4 +33,21 @@ router.post("/add_task",async function(req,res) {
     }
 });
 
+/**
+ * GET all tasks route
+ */
+router.get("/tasks", async function(req, res) {
+    try {
+        console.log("awaiting on listOfTasks from db.js")
+        const listOfTasks = await db.getAllTasks();
+        console.log("listOfQuizzes:", listOfTasks);
+
+        res.send(listOfTasks);
+    }
+    catch (err) {
+        console.error("Error:", err.message);
+        res.status(500).json({"error": "Internal Server Error" });
+    }
+});
+
 module.exports = router;

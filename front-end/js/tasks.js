@@ -3,10 +3,9 @@ const addTaskBtn = document.getElementById("add-task-button");
 const inputField = document.getElementById("task-input-field");
 
 // Initialize event listeners
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
     console.log("page loaded");
-    console.log(addTaskBtn);
-    console.log(inputField);
+    await fetchTasksAndDisplay();
     addTaskBtn.addEventListener("click", openForm);
     inputField.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
@@ -16,6 +15,9 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+/**
+ * Open popup to enter new task info
+ */
 async function openForm() {
     const taskName = inputField.value;
 
@@ -58,6 +60,11 @@ async function openForm() {
     }
 }
 
+/**
+ * Send POST request to router to add new task to the database and task board
+ * @param taskData to create new task object from
+ * @param popup page with task info to enter
+ */
 async function addNewTask(taskData, popup) {
     const API_URL = 'http://localhost:8080/add_task';
 
@@ -72,6 +79,7 @@ async function addNewTask(taskData, popup) {
 
         if (response.ok) {
             popup.close();
+            await fetchTasksAndDisplay();
         } else {
             throw new Error('Failed to submit form');
         }
@@ -79,4 +87,101 @@ async function addNewTask(taskData, popup) {
         console.error(error);
         popup.alert("Error: " + error.message);
     }
+}
+
+/**
+ * Get all tasks from the table in database and process for display
+ */
+async function fetchTasksAndDisplay() {
+    const API_URL = "http://localhost:8080/tasks";
+
+    try
+    {
+        console.log("Awaiting response")
+        const response = await fetch(API_URL);
+        console.log("received response")
+
+        if (response.ok)
+        {
+            const listOfTasksAsJSON = await response.json();
+            console.log("Successfully fetched tasks data.")
+
+            displayTasks(listOfTasksAsJSON);
+        }
+        else
+        {
+            throw new Error("failed to fetch task data.")
+        }
+    }
+    catch (error)
+    {
+        console.error(error);
+    }
+}
+
+/**
+ * Display all tasks in the task board
+ * @param listOfTasks JSON list of tasks
+ */
+function displayTasks(listOfTasks) {
+    // get list containers
+    const todoList = document.getElementById("todoList").querySelector(".scroll");
+    const inProgressList = document.getElementById("inprogressList").querySelector(".scroll");
+    const completeList = document.getElementById("completeList").querySelector(".scroll");
+
+    // clear lists to avoid duplicates
+    todoList.innerHTML = "";
+    inProgressList.innerHTML = "";
+    completeList.innerHTML = "";
+
+    // iterate through list of tasks
+    listOfTasks.forEach(task => {
+        const taskID = task.id;
+        const taskName = task.name;
+        const taskDueDate = task.due_date;
+        const taskStatus = task.status;
+
+        // create new li element for each task
+        const newTaskItem = document.createElement("li");
+        newTaskItem.setAttribute("data-task-id", taskID);
+
+        // span element for task name and for due date
+        const taskNameElement = document.createElement("span");
+        taskNameElement.className = "task_name";
+        taskNameElement.textContent = taskName;
+
+        const taskDueDateElement = document.createElement("span");
+        taskDueDateElement.className = "due_date";
+        taskDueDateElement.textContent = `Due: ${taskDueDate}`;
+
+        // add span elements to li element
+        newTaskItem.appendChild(taskNameElement);
+        newTaskItem.appendChild(taskDueDateElement);
+
+        // append li element to appropriate status column
+        switch (taskStatus) {
+            case "To Do":
+                todoList.appendChild(newTaskItem);
+                break;
+            case "In Progress":
+                inProgressList.appendChild(newTaskItem);
+                break;
+            case "Complete":
+                completeList.appendChild(newTaskItem);
+                break;
+        }
+
+        // set up event listeners for tasks
+        // newTaskItem.addEventListener("mouseover", () => {
+        //     showTaskDetails(taskID);
+        // });
+        //
+        // newTaskItem.addEventListener("click", () => {
+        //     editTaskDetails(taskID);
+        // });
+    });
+}
+
+function showTaskDetails(taskID) {
+
 }

@@ -1,4 +1,5 @@
 const fs = require("fs");
+const util = require("util");
 const sqlite3 = require('sqlite3').verbose();
 
 const SQLITE_FILE_NAME = "todo.sqlite";
@@ -116,7 +117,49 @@ async function insertNewTask(newTask) {
     });
 }
 
+async function getAllTasks() {
+    return new Promise(function(resolve, reject) {
+        db.serialize(function() {
+            db.run("BEGIN TRANSACTION");
+
+            const sql = `SELECT * FROM tasks;`;
+            let listOfTasks = [];
+
+            const callbackToProcessEachRow = function(err, row) {
+                if (err) {
+                    reject(err);
+                }
+
+                const id = row.id;
+                const name = row.name;
+                const description = row.description;
+                const due_date = row.due_date;
+                const due_time = row.due_time;
+                const status = row.status;
+
+                const currentRowTask = {
+                    id: id,
+                    name: name,
+                    description: description,
+                    due_date: due_date,
+                    due_time: due_time,
+                    status: status
+                };
+
+                listOfTasks.push(currentRowTask);
+            };
+
+            const callbackAfterAllRowsAreProcessed = function() {
+                resolve(listOfTasks);
+            };
+
+            db.each(sql, callbackToProcessEachRow, callbackAfterAllRowsAreProcessed);
+        });
+    });
+}
+
 // these functions will be available from other files that import this module
 module.exports = {
     insertNewTask,
+    getAllTasks,
 };
