@@ -38,7 +38,7 @@ async function openForm() {
         // set task name value
         popup.onload = () => {
             if (taskName !== "") {
-                popup.document.getElementById('task-name').setAttribute('value', taskName);
+                popup.document.getElementById('task_name').setAttribute('value', taskName);
             }
 
             const taskForm = popup.document.getElementById("task-form");
@@ -50,7 +50,7 @@ async function openForm() {
                     addNewTask(formData, popup);
                 });
             } else {
-                console.error("Failed to fetch the popup form:", error);
+                console.error("Failed to fetch the popup form");
             }
         }
     } catch (error) {
@@ -59,7 +59,7 @@ async function openForm() {
 }
 
 async function addNewTask(taskData, popup) {
-    const API_URL = 'http://localhost:8080/add-task';
+    const API_URL = 'http://localhost:8080/add_task';
 
     try {
         const response = await fetch(API_URL, {

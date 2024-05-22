@@ -1,4 +1,3 @@
-const util = require("util");
 const fs = require("fs");
 const sqlite3 = require('sqlite3').verbose();
 
@@ -47,7 +46,7 @@ else
     // This is the default environment (e.g., 'development')
 
     // Create a connection to the SQLite database file specified in SQLITE_FILE_NAME
-    db = new sqlite3.Database("../" + SQLITE_FILE_NAME, function(err)
+    db = new sqlite3.Database("./" + SQLITE_FILE_NAME, function(err)
     {
         if (err)
         {
@@ -57,33 +56,64 @@ else
         // Enable enforcement of foreign keys constraints in the SQLite database every time we start the application
         db.get("PRAGMA foreign_keys = ON;");
 
-        console.log(`Connected to the '${SQLITE_FILE_NAME}' SQLite database for development.`);
+        let stmt = `
+                CREATE TABLE IF NOT EXISTS tasks
+                (
+                    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name                    VARCHAR(30) NOT NULL,
+                    description             VARCHAR(100),
+                    due_date                DATE,
+                    due_time                TIME,
+                    status                  VARCHAR(20) NOT NULL
+                );`;
+
+        db.run(stmt, function (err){
+            if (err) {
+                return console.error("Error creating tasks table:", err.message);
+            }
+            console.log(`Connected to the '${SQLITE_FILE_NAME}' SQLite database for development.`);
+        });
     });
 }
 
 /**
  *
  */
-async function insertNewTask(taskName, description, due_date, due_time, status) {
-    try {
-        const result = await new Promise((resolve, reject) => {
-            const sql = `
-                INSERT INTO tasks(name, description, due_date, due_time, status)
-                VALUES (?,?,?,?,?);`;
-            db.run(sql, [taskName, description, due_date, due_time, status], function (err) {
+async function insertNewTask(newTask) {
+    return new Promise(function (resolve, reject) {
+        db.serialize(function () {
+            db.run("BEGIN TRANSACTION;");
+
+            const sql =
+                `INSERT INTO tasks (name, description, due_date, due_time, status)
+                 VALUES (?, ?, ?, ?, ?);`;
+
+            function callbackAfterReturnedRowIsProcessed(err, row) {
+                console.log("callbackAfterReturnedRowIsProcessed - START");
                 if (err) {
                     reject(err);
-                } else {
-                    resolve({lastID: this.lastID, changes: this.changes});
                 }
-            });
+
+                const numberOfRowsAffected = this.changes;
+                if (numberOfRowsAffected > 0) {
+                    const generatedIdForTheNewlyInsertedTask = this.lastID;
+
+                    console.log("SUCESSFULLY inserted a new task with id = " + generatedIdForTheNewlyInsertedTask);
+                    newTask.id = generatedIdForTheNewlyInsertedTask;
+
+                    db.run("COMMIT;", function(commitErr) {
+                        if (commitErr) {
+                            reject(commitErr);
+                        } else {
+                            resolve(newTask);
+                        }
+                    });
+                }
+            }
+            db.run(sql, [newTask.task_name, newTask.task_description, newTask.due_date, newTask.due_time, newTask.status],
+                callbackAfterReturnedRowIsProcessed);
         });
-        console.log('Task added with ID:', result.lastID);
-        return result;
-    } catch (error) {
-        console.error("Database Error: ", error);
-        throw error;
-    }
+    });
 }
 
 // these functions will be available from other files that import this module
