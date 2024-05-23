@@ -79,7 +79,7 @@ async function addNewTask(taskData, popup) {
 
         if (response.ok) {
             popup.close();
-            // await fetchTasksAndDisplay();
+            await fetchTasksAndDisplay();
         } else {
             throw new Error('Failed to submit form');
         }
@@ -145,18 +145,11 @@ function displayTasks(listOfTasks) {
         const newTaskItem = document.createElement("li");
         newTaskItem.setAttribute("data-task-id", taskID);
 
-        // span element for task name and for due date
+        // span element for task name
         const taskNameElement = document.createElement("span");
         taskNameElement.className = "task_name";
         taskNameElement.textContent = taskName;
-
-        const taskDueDateElement = document.createElement("span");
-        taskDueDateElement.className = "due_date";
-        taskDueDateElement.textContent = `Due: ${taskDueDate}`;
-
-        // add span elements to li element
         newTaskItem.appendChild(taskNameElement);
-        newTaskItem.appendChild(taskDueDateElement);
 
         // append li element to appropriate status column
         switch (taskStatus) {
