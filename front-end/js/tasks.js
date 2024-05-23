@@ -79,7 +79,7 @@ async function addNewTask(taskData, popup) {
 
         if (response.ok) {
             popup.close();
-            await fetchTasksAndDisplay();
+            // await fetchTasksAndDisplay();
         } else {
             throw new Error('Failed to submit form');
         }
@@ -89,9 +89,9 @@ async function addNewTask(taskData, popup) {
     }
 }
 
-/**
- * Get all tasks from the table in database and process for display
- */
+// /**
+//  * Get all tasks from the table in database and process for display
+//  */
 async function fetchTasksAndDisplay() {
     const API_URL = "http://localhost:8080/tasks";
 
@@ -119,10 +119,10 @@ async function fetchTasksAndDisplay() {
     }
 }
 
-/**
- * Display all tasks in the task board
- * @param listOfTasks JSON list of tasks
- */
+// /**
+//  * Display all tasks in the task board
+//  * @param listOfTasks JSON list of tasks
+//  */
 function displayTasks(listOfTasks) {
     // get list containers
     const todoList = document.getElementById("todoList").querySelector(".scroll");
@@ -160,13 +160,13 @@ function displayTasks(listOfTasks) {
 
         // append li element to appropriate status column
         switch (taskStatus) {
-            case "To Do":
+            case "todo":
                 todoList.appendChild(newTaskItem);
                 break;
-            case "In Progress":
+            case "inprogress":
                 inProgressList.appendChild(newTaskItem);
                 break;
-            case "Complete":
+            case "complete":
                 completeList.appendChild(newTaskItem);
                 break;
         }

@@ -40,7 +40,7 @@ router.get("/tasks", async function(req, res) {
     try {
         console.log("awaiting on listOfTasks from db.js")
         const listOfTasks = await db.getAllTasks();
-        console.log("listOfQuizzes:", listOfTasks);
+        console.log("listOfTasks:", listOfTasks);
 
         res.send(listOfTasks);
     }

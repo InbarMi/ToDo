@@ -150,7 +150,13 @@ async function getAllTasks() {
             };
 
             const callbackAfterAllRowsAreProcessed = function() {
-                resolve(listOfTasks);
+                db.run("COMMIT;", function(commitErr) {
+                    if (commitErr) {
+                        reject(commitErr);
+                    } else {
+                        resolve(listOfTasks);
+                    }
+                });
             };
 
             db.each(sql, callbackToProcessEachRow, callbackAfterAllRowsAreProcessed);
