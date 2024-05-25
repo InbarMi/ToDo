@@ -97,16 +97,17 @@ async function fetchTasksAndDisplay() {
 
     try
     {
-        console.log("Awaiting response")
+        console.log("Awaiting response");
         const response = await fetch(API_URL);
-        console.log("received response")
+        console.log("received response");
 
         if (response.ok)
         {
             const listOfTasksAsJSON = await response.json();
-            console.log("Successfully fetched tasks data.")
+            console.log("Successfully fetched tasks data.");
 
             displayTasks(listOfTasksAsJSON);
+            console.log("finished displaying tasks on board");
         }
         else
         {
@@ -119,15 +120,19 @@ async function fetchTasksAndDisplay() {
     }
 }
 
-// /**
-//  * Display all tasks in the task board
-//  * @param listOfTasks JSON list of tasks
-//  */
+/**
+ * Display all tasks in the task board
+ * @param listOfTasks JSON list of tasks
+ */
 function displayTasks(listOfTasks) {
     // get list containers
     const todoList = document.getElementById("todoList").querySelector(".scroll");
     const inProgressList = document.getElementById("inprogressList").querySelector(".scroll");
     const completeList = document.getElementById("completeList").querySelector(".scroll");
+
+    console.log(todoList);
+    console.log(inProgressList);
+    console.log(completeList);
 
     // clear lists to avoid duplicates
     todoList.innerHTML = "";
@@ -136,25 +141,21 @@ function displayTasks(listOfTasks) {
 
     // iterate through list of tasks
     listOfTasks.forEach(task => {
-        const taskID = task.id;
-        const taskName = task.name;
-        const taskDueDate = task.due_date;
-        const taskStatus = task.status;
+        const taskID = task.task_id;
+        const taskStatus = task.task_status;
 
         // create new li element for each task
         const newTaskItem = document.createElement("li");
+        newTaskItem.setAttribute("class", "task-item")
         newTaskItem.setAttribute("data-task-id", taskID);
 
-        // span element for task name
-        const taskNameElement = document.createElement("span");
-        taskNameElement.className = "task_name";
-        taskNameElement.textContent = taskName;
-        newTaskItem.appendChild(taskNameElement);
+        setTaskItemDetails(newTaskItem, task);
 
         // append li element to appropriate status column
         switch (taskStatus) {
             case "todo":
                 todoList.appendChild(newTaskItem);
+                console.log(`${newTaskItem} successfully appended to todo column`);
                 break;
             case "inprogress":
                 inProgressList.appendChild(newTaskItem);
@@ -164,17 +165,98 @@ function displayTasks(listOfTasks) {
                 break;
         }
 
-        // set up event listeners for tasks
-        // newTaskItem.addEventListener("mouseover", () => {
-        //     showTaskDetails(taskID);
-        // });
-        //
-        // newTaskItem.addEventListener("click", () => {
-        //     editTaskDetails(taskID);
-        // });
+        const expandArrow = newTaskItem.querySelector(".expand-arrow");
+        expandArrow.addEventListener("click", () => {
+            newTaskItem.classList.toggle("expanded");
+            expandArrow.textContent = newTaskItem.classList.contains('expanded') ? '▲' : '▼';
+        });
+
+        document.querySelectorAll('.task-details span .task-details span').forEach(span => {
+            span.addEventListener("dblclick", function() {
+                this.setAttribute('contenteditable', 'true');
+                this.focus();
+            });
+
+            span.addEventListener("blur", function() {
+                this.setAttribute("contenteditable", "false");
+                const updatedData = collectUpdatedTaskData(newTaskItem, taskStatus);
+                updateTask(taskID);
+            });
+
+            span.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    this.blur();
+                    event.preventDefault();
+                }
+            });
+        })
+
+
     });
 }
 
-function showTaskDetails(taskID) {
+function collectUpdatedTaskData(task, taskStatus) {
+    return {
+        task_name: task.querySelector('.task-name').innerText,
+        task_description: task.querySelector('.task-description').innerText,
+        due_date: task.querySelector('.due-date').innerText,
+        due_time: task.querySelector('.due-time').innerText,
+        task_status: taskStatus
+    };
+}
 
+function setTaskItemDetails(taskElement, task) {
+    const taskName = task.task_name;
+    const taskDescription = task.task_description;
+    const dueDate = task.due_date;
+    const dueTime = task.due_time;
+
+    let taskElementHTML = `
+            <div class="task-summary">
+                <p class="task-name" contenteditable="false">${taskName}</p>
+                <button class="expand-arrow">▼</button>
+            </div>
+            <div class="task-details">
+            <hr>`;
+
+    if (taskDescription) {
+        taskElementHTML += `<p>Description: <span class="task-description" contenteditable="false">${taskDescription}</span><br>`;
+    } else {
+        taskElementHTML += `<p>`
+    }
+
+    if (dueDate) {
+        taskElementHTML += `Due Date: <span class="due-date" contenteditable="false">${dueDate}</span>`;
+        if (dueDate !== "") {
+            taskElementHTML += ` at <span class="due-time" contenteditable="false">${dueTime}</span>`;
+        }
+    }
+    taskElementHTML += `</p><br>`;
+    taskElementHTML += `</div>`;
+
+    taskElement.innerHTML = taskElementHTML;
+}
+async function updateTask(taskID, updatedData) {
+    const API_URL = `http://localhost:8080/update_task/${taskID}`;
+
+    try
+    {
+        const response = await fetch(API_URL, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updatedData)
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to update task");
+        }
+
+        console.log(`Successfully updated task ${taskID}`);
+    }
+    catch (error)
+    {
+        console.error("Error updating task: ", error);
+    }
 }

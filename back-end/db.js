@@ -60,19 +60,20 @@ else
         let stmt = `
                 CREATE TABLE IF NOT EXISTS tasks
                 (
-                    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name                    VARCHAR(30) NOT NULL,
-                    description             VARCHAR(100),
-                    due_date                DATE,
-                    due_time                TIME,
-                    status                  VARCHAR(20) NOT NULL
+                    task_id                     INTEGER PRIMARY KEY AUTOINCREMENT,
+                    task_name                   VARCHAR(30) NOT NULL,
+                    task_description            VARCHAR(100),
+                    due_date                    DATE,
+                    due_time                    TIME,
+                    task_status                 VARCHAR(20) NOT NULL
                 );`;
 
         db.run(stmt, function (err){
             if (err) {
                 return console.error("Error creating tasks table:", err.message);
+            } else {
+                console.log(`Connected to the '${SQLITE_FILE_NAME}' SQLite database for development.`);
             }
-            console.log(`Connected to the '${SQLITE_FILE_NAME}' SQLite database for development.`);
         });
     });
 }
@@ -86,7 +87,7 @@ async function insertNewTask(newTask) {
             db.run("BEGIN TRANSACTION;");
 
             const sql =
-                `INSERT INTO tasks (name, description, due_date, due_time, status)
+                `INSERT INTO tasks (task_name, task_description, due_date, due_time, task_status)
                  VALUES (?, ?, ?, ?, ?);`;
 
             function callbackAfterReturnedRowIsProcessed(err, row) {
@@ -111,7 +112,7 @@ async function insertNewTask(newTask) {
                     });
                 }
             }
-            db.run(sql, [newTask.task_name, newTask.task_description, newTask.due_date, newTask.due_time, newTask.status],
+            db.run(sql, [newTask.task_name, newTask.task_description, newTask.due_date, newTask.due_time, newTask.task_status],
                 callbackAfterReturnedRowIsProcessed);
         });
     });
@@ -130,20 +131,20 @@ async function getAllTasks() {
                     reject(err);
                 }
 
-                const id = row.id;
-                const name = row.name;
-                const description = row.description;
+                const id = row.task_id;
+                const name = row.task_name;
+                const description = row.task_description;
                 const due_date = row.due_date;
                 const due_time = row.due_time;
-                const status = row.status;
+                const status = row.task_status;
 
                 const currentRowTask = {
-                    id: id,
-                    name: name,
-                    description: description,
+                    task_id: id,
+                    task_name: name,
+                    task_description: description,
                     due_date: due_date,
                     due_time: due_time,
-                    status: status
+                    task_status: status
                 };
 
                 listOfTasks.push(currentRowTask);

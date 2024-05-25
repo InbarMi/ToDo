@@ -8,18 +8,18 @@ const db = require("./../db");
 router.post("/add_task",async function(req,res) {
     try {
         const taskName = req.body.task_name;
-        const taskDescription = req.body.description;
+        const taskDescription = req.body.task_description;
         const dueDate = req.body.due_date;
         const dueTime = req.body.due_time;
-        const status = req.body.status;
+        const status = req.body.task_status;
 
 
         let newTask = {
             task_name: taskName,
-            description: taskDescription,
+            task_description: taskDescription,
             due_date: dueDate,
             due_time: dueTime,
-            status: status
+            task_status: status
         };
 
         console.log(newTask);
