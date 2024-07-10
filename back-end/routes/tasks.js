@@ -50,4 +50,20 @@ router.get("/tasks", async function(req, res) {
     }
 });
 
+/**
+ * UPDATE a single task
+ */
+router.put("/update_task/:task_id", async function(req, res) {
+    const taskID = req.params.task_id;
+    const updatedData = req.body;
+
+    try {
+        const result = await db.updateTask(taskID, updatedData);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(`Error updating task with id: ${taskID}: `, error);
+        res.status(500).json({"error": "Internal Server Error"});
+    }
+});
+
 module.exports = router;

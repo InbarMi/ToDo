@@ -171,7 +171,7 @@ function displayTasks(listOfTasks) {
             expandArrow.textContent = newTaskItem.classList.contains('expanded') ? '▲' : '▼';
         });
 
-        document.querySelectorAll('.task-details span .task-details span').forEach(span => {
+        document.querySelectorAll('.task-details span').forEach(span => {
             span.addEventListener("dblclick", function() {
                 this.setAttribute('contenteditable', 'true');
                 this.focus();
@@ -189,9 +189,7 @@ function displayTasks(listOfTasks) {
                     event.preventDefault();
                 }
             });
-        })
-
-
+        });
     });
 }
 

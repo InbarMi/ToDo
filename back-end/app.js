@@ -1,3 +1,5 @@
+// command to run from back-end folder: node app.js
+
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require('body-parser');
