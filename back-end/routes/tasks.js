@@ -55,9 +55,10 @@ router.get("/tasks", async function(req, res) {
  * GET task by id
  */
 router.get("/tasks/:taskID", async function(req, res) {
+    const taskID = req.params.taskID;
     try {
         console.log(`awaiting on task from db.js`);
-        const task = await db.getTaskById(taskId);
+        const task = await db.getTaskById(taskID);
 
         if (task) {
             res.send(task);
