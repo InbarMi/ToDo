@@ -52,28 +52,32 @@ h1 {
 
 .task-board {
     display: grid;
-    grid-template-columns: repeat(3, minmax(300px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(3, minmax(400px, 1fr));
+    gap: 20px;
     text-align: center;
     color: white;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 10px 20px;
+}
+
+.column-todo, .column-in-progress, .column-complete {
+    flex: 1 1 auto;
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .column-todo {
     background-color: rgba(240, 113, 147, 0.5);
-    padding: 10px;
-    border-radius: 10px;
 }
 
 .column-in-progress {
     background-color: rgba(237, 171, 121, 0.5);
-    padding: 10px;
-    border-radius: 10px;
 }
 
 .column-complete {
     background-color: rgba(121, 237, 162, 0.5);
-    padding: 10px;
-    border-radius: 10px;
 }
 
 #submit-task-button {
@@ -141,10 +145,10 @@ li {
     color: rgba(121, 237, 162, 0.8);
 }
 
-.deleteButton {
+.deleteButton, .edit-button {
     background-color: white;
     border-radius: 5px;
-    border: none;
+    border: 1px solid;
     padding: 5px;
     color: grey;
 }
@@ -159,7 +163,10 @@ li {
 
 .task-summary {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    word-wrap: break-word;
+    max-width: 100%;
 }
 
 .expand-arrow {
