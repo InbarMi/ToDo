@@ -171,36 +171,13 @@ function displayTasks(listOfTasks) {
             expandArrow.textContent = newTaskItem.classList.contains('expanded') ? '▲' : '▼';
         });
 
-        document.querySelectorAll('.task-details span').forEach(span => {
-            span.addEventListener("dblclick", function() {
-                this.setAttribute('contenteditable', 'true');
-                this.focus();
-            });
+        const editBtn = newTaskItem.querySelector(".edit-button");
+        editBtn.addEventListener("click", () => {
+            console.log("edit button clicked :)");
+            openEditForm(taskID);
+        })
 
-            span.addEventListener("blur", function() {
-                this.setAttribute("contenteditable", "false");
-                const updatedData = collectUpdatedTaskData(newTaskItem, taskStatus);
-                updateTask(taskID);
-            });
-
-            span.addEventListener("keydown", function(event) {
-                if (event.key === "Enter") {
-                    this.blur();
-                    event.preventDefault();
-                }
-            });
-        });
     });
-}
-
-function collectUpdatedTaskData(task, taskStatus) {
-    return {
-        task_name: task.querySelector('.task-name').innerText,
-        task_description: task.querySelector('.task-description').innerText,
-        due_date: task.querySelector('.due-date').innerText,
-        due_time: task.querySelector('.due-time').innerText,
-        task_status: taskStatus
-    };
 }
 
 function setTaskItemDetails(taskElement, task) {
@@ -211,29 +188,94 @@ function setTaskItemDetails(taskElement, task) {
 
     let taskElementHTML = `
             <div class="task-summary">
-                <p class="task-name" contenteditable="false">${taskName}</p>
+                <p class="task-name">${taskName}</p>
                 <button class="expand-arrow">▼</button>
             </div>
             <div class="task-details">
             <hr>`;
 
     if (taskDescription) {
-        taskElementHTML += `<p>Description: <span class="task-description" contenteditable="false">${taskDescription}</span><br>`;
+        taskElementHTML += `<p><b>Description:</b> ${taskDescription}</span><br>`;
     } else {
         taskElementHTML += `<p>`
     }
 
     if (dueDate) {
-        taskElementHTML += `Due Date: <span class="due-date" contenteditable="false">${dueDate}</span>`;
+        taskElementHTML += `<b>Due Date:</b> ${dueDate}`;
         if (dueDate !== "") {
-            taskElementHTML += ` at <span class="due-time" contenteditable="false">${dueTime}</span>`;
+            taskElementHTML += ` (${dueTime})`;
         }
     }
     taskElementHTML += `</p><br>`;
+    taskElementHTML += '<button class="edit-button">Edit</button>';
     taskElementHTML += `</div>`;
 
     taskElement.innerHTML = taskElementHTML;
 }
+
+/**
+ * Open popup to edit existing task info
+ */
+async function openEditForm(taskID) {
+
+    try {
+        // get editForm.html content
+        const response = await fetch('./editForm.html');
+        if (!response.ok) {
+            throw new Error('Network response failure ' + response.statusText);
+        }
+        let htmlContent = await response.text();
+
+        // open new pop-up window
+        let popup = window.open("", "Edit Task Form", "width=600,height=400,scroll=no,resizable=no");
+
+        // write html content to the pop-up
+        popup.document.open();
+        popup.document.write(htmlContent);
+        popup.document.close();
+
+        // populate fields with existing data
+        popup.onload = async () => {
+            try {
+                const taskResponse = await fetch(`http://localhost:8080/get_task/${taskID}`);
+                if (!taskResponse.ok) {
+                    throw new Error('Failed to fetch task data ' + taskResponse.statusText);
+                }
+                const taskData = await taskResponse.json();
+
+                // set form values
+                popup.document.getElementById("task_name").value = taskData.task_name || '';
+                popup.document.getElementById("task_description").value = taskData.task_description || '';
+                popup.document.getElementById("task_status").value = taskData.task_status;
+                popup.document.getElementById("due-date").value = taskData.due_date;
+                popup.document.getElementById("due-time").value = taskData.due_time;
+
+                const taskForm = popup.document.getElementById("edit-form");
+                if (taskForm) {
+                    taskForm.addEventListener("submit", function(event) {
+                        event.preventDefault();
+
+                        const updatedData = {
+                            task_name: popup.document.getElementById('task_name').value || null,
+                            task_description: popup.document.getElementById('task_description').value || null,
+                            due_date: popup.document.getElementById('due_date').value || null,
+                            due_time: popup.document.getElementById('due_time').value || null
+                        };
+                        updateTask(taskID, updatedData);
+                        popup.close();
+                    });
+                } else {
+                    console.error("Failed to find the edit form");
+                }
+            } catch (error) {
+                console.error("Failed to fetch task data:", error);
+            }
+        };
+    } catch (error) {
+        console.error('Failed to fetch the popup form:', error);
+    }
+}
+
 async function updateTask(taskID, updatedData) {
     const API_URL = `http://localhost:8080/update_task/${taskID}`;
 
