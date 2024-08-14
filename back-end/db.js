@@ -165,6 +165,48 @@ async function getAllTasks() {
     });
 }
 
+async function getTaskById(taskId) {
+    return new Promise(function(resolve, reject) {
+        db.serialize(function() {
+            db.run("BEGIN TRANSACTION");
+
+            const sql = `SELECT * FROM tasks WHERE task_id = ?;`;
+            let task = null;
+
+            db.get(sql, [taskId], function(err, row) {
+                if (err) {
+                    reject(err);
+                } else if (row) {
+
+                    const id = row.task_id;
+                    const name = row.task_name;
+                    const description = row.task_description;
+                    const due_date = row.due_date;
+                    const due_time = row.due_time;
+                    const status = row.task_status;
+
+                    task = {
+                        task_id: id,
+                        task_name: name,
+                        task_description: description,
+                        due_date: due_date,
+                        due_time: due_time,
+                        task_status: status
+                    };
+                }
+
+                db.run("COMMIT;", function (commitErr) {
+                    if (commitErr) {
+                        reject(commitErr);
+                    } else {
+                        resolve(task);
+                    }
+                });
+            });
+        });
+    });
+}
+
 async function updateTask(taskId, updatedTask) {
     return new Promise(function (resolve, reject) {
         db.serialize(function () {
@@ -213,5 +255,6 @@ async function updateTask(taskId, updatedTask) {
 module.exports = {
     insertNewTask,
     getAllTasks,
-    updateTask
+    updateTask,
+    getTaskById
 };
