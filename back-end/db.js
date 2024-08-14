@@ -168,40 +168,21 @@ async function getAllTasks() {
 async function getTaskById(taskId) {
     return new Promise(function(resolve, reject) {
         db.serialize(function() {
-            db.run("BEGIN TRANSACTION");
-
             const sql = `SELECT * FROM tasks WHERE task_id = ?;`;
-            let task = null;
-
             db.get(sql, [taskId], function(err, row) {
                 if (err) {
                     reject(err);
-                } else if (row) {
-
-                    const id = row.task_id;
-                    const name = row.task_name;
-                    const description = row.task_description;
-                    const due_date = row.due_date;
-                    const due_time = row.due_time;
-                    const status = row.task_status;
-
-                    task = {
-                        task_id: id,
-                        task_name: name,
-                        task_description: description,
-                        due_date: due_date,
-                        due_time: due_time,
-                        task_status: status
-                    };
+                } else {
+                    const task = row ? {
+                        task_id: row.task_id,
+                        task_name: row.task_name,
+                        task_description: row.task_description,
+                        due_date: row.due_date,
+                        due_time: row.due_time,
+                        task_status: row.task_status
+                    } : null;
+                    resolve(task);
                 }
-
-                db.run("COMMIT;", function (commitErr) {
-                    if (commitErr) {
-                        reject(commitErr);
-                    } else {
-                        resolve(task);
-                    }
-                });
             });
         });
     });
