@@ -1,6 +1,7 @@
 let express = require('express');
 let router = express.Router();
 const db = require("./../db");
+const {query} = require("express");
 
 /**
  * POST route
@@ -47,6 +48,25 @@ router.get("/tasks", async function(req, res) {
     catch (err) {
         console.error("Error:", err.message);
         res.status(500).json({"error": "Internal Server Error" });
+    }
+});
+
+/**
+ * GET task by id
+ */
+router.get("/tasks/:taskID", async function(req, res) {
+    try {
+        console.log(`awaiting on task from db.js`);
+        const task = await db.getTaskById(taskId);
+
+        if (task) {
+            res.send(task);
+        } else {
+            res.status(404).json({error: "Task not found"});
+        }
+    } catch (err) {
+        console.error("Error: ", err.message);
+        res.status(500).json({error: "Internal Server Error"});
     }
 });
 
