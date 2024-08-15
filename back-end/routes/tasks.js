@@ -75,11 +75,23 @@ router.get("/tasks/:taskID", async function(req, res) {
  * UPDATE a single task
  */
 router.put("/update_task/:task_id", async function(req, res) {
+    const taskName = req.body.task_name;
+    const taskDescription = req.body.task_description;
+    const dueDate = req.body.due_date;
+    const dueTime = req.body.due_time;
+    const taskStatus = req.body.task_status;
     const taskID = req.params.task_id;
-    const updatedData = req.body;
 
     try {
-        const result = await db.updateTask(taskID, updatedData);
+        console.log("Received updated data:", {
+            taskName,
+            taskDescription,
+            dueDate,
+            dueTime,
+            taskStatus,
+            taskID
+        });
+        const result = await db.updateTask(taskID, taskName, taskDescription, dueDate, dueTime, taskStatus);
         res.status(200).json(result);
     } catch (error) {
         console.error(`Error updating task with id: ${taskID}: `, error);

@@ -188,7 +188,8 @@ async function getTaskById(taskId) {
     });
 }
 
-async function updateTask(taskId, updatedTask) {
+async function updateTask(taskId, taskName, taskDescription, dueDate, dueTime, taskStatus) {
+    console.log("Entering updateTask function");
     return new Promise(function (resolve, reject) {
         db.serialize(function () {
             db.run("BEGIN TRANSACTION", (error) => {
@@ -198,16 +199,21 @@ async function updateTask(taskId, updatedTask) {
 
                 const sql = `
                         UPDATE tasks
-                        SET task_name = ?, task_description = ?, due_date = ?, due_time = ?, task_status = ?
+                        SET task_name = ?,
+                            task_description = ?,
+                            due_date = ?,
+                            due_time = ?,
+                            task_status = ?
                         WHERE task_id = ?;`;
 
                 const params = [
-                    updatedTask.task_name,
-                    updatedTask.task_description,
-                    updatedTask.due_date,
-                    updatedTask.due_time,
-                    updatedTask.task_status,
-                    taskId];
+                    taskName,
+                    taskDescription,
+                    dueDate,
+                    dueTime,
+                    taskStatus,
+                    taskId
+                ];
 
                 db.run(sql, params, function (error) {
                     if (error) {
@@ -215,9 +221,8 @@ async function updateTask(taskId, updatedTask) {
                         console.error(`Error updating task with id ${taskId}: `, error);
                         reject(error);
                     } else {
-                        const numRowsAffected = this.changes;
-                        if (numRowsAffected > 0) {
-                            console.log(`Successfullly updated task with id ${taskId}`);
+                        if (this.changes > 0) {
+                            console.log(`Successfully updated task with id ${taskId}`);
                             db.run("COMMIT");
                             resolve();
                         } else {

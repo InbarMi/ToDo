@@ -173,9 +173,14 @@ function displayTasks(listOfTasks) {
 
         const editBtn = newTaskItem.querySelector(".edit-button");
         editBtn.addEventListener("click", () => {
-            console.log("edit button clicked :)");
-            openEditForm(taskID);
-        })
+            openEditForm(taskID)
+                .then(() => {
+                    console.log("Edit form opened successfully");
+                })
+                .catch((error) => {
+                    console.error("Error opening edit form:", error);
+                });
+        });
 
     });
 }
@@ -237,7 +242,7 @@ async function openEditForm(taskID) {
         // populate fields with existing data
         popup.onload = async () => {
             try {
-                const taskResponse = await fetch(`http://localhost:8080/get_task/${taskID}`);
+                const taskResponse = await fetch(`http://localhost:8080/tasks/${taskID}`);
                 if (!taskResponse.ok) {
                     throw new Error('Failed to fetch task data ' + taskResponse.statusText);
                 }
@@ -246,9 +251,9 @@ async function openEditForm(taskID) {
                 // set form values
                 popup.document.getElementById("task_name").value = taskData.task_name || '';
                 popup.document.getElementById("task_description").value = taskData.task_description || '';
-                popup.document.getElementById("task_status").value = taskData.task_status;
-                popup.document.getElementById("due-date").value = taskData.due_date;
-                popup.document.getElementById("due-time").value = taskData.due_time;
+                popup.document.getElementById("task_status").value = taskData.task_status || '';
+                popup.document.getElementById("due_date").value = taskData.due_date || '';
+                popup.document.getElementById("due_time").value = taskData.due_time || '';
 
                 const taskForm = popup.document.getElementById("edit-form");
                 if (taskForm) {
@@ -256,11 +261,15 @@ async function openEditForm(taskID) {
                         event.preventDefault();
 
                         const updatedData = {
-                            task_name: popup.document.getElementById('task_name').value || null,
-                            task_description: popup.document.getElementById('task_description').value || null,
-                            due_date: popup.document.getElementById('due_date').value || null,
-                            due_time: popup.document.getElementById('due_time').value || null
+                            task_name: popup.document.getElementById('task_name').value || '',
+                            task_description: popup.document.getElementById('task_description').value || '',
+                            due_date: popup.document.getElementById('due_date').value || '',
+                            due_time: popup.document.getElementById('due_time').value || '',
+                            task_status: popup.document.getElementById("task_status").value || ''
                         };
+
+                        console.log("Submitting updated data:", updatedData);
+
                         updateTask(taskID, updatedData);
                         popup.close();
                     });
@@ -278,15 +287,16 @@ async function openEditForm(taskID) {
 
 async function updateTask(taskID, updatedData) {
     const API_URL = `http://localhost:8080/update_task/${taskID}`;
+    console.log("updatedData: ", updatedData);
 
     try
     {
         const response = await fetch(API_URL, {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: JSON.stringify(updatedData)
+            body: new URLSearchParams(updatedData)
         });
 
         if (!response.ok) {
