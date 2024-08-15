@@ -201,15 +201,12 @@ function setTaskItemDetails(taskElement, task) {
 
     if (taskDescription) {
         taskElementHTML += `<p><b>Description:</b> ${taskDescription}</span><br>`;
-    } else {
-        taskElementHTML += `<p>`
     }
-
     if (dueDate) {
-        taskElementHTML += `<b>Due Date:</b> ${dueDate}`;
-        if (dueDate !== "") {
-            taskElementHTML += ` (${dueTime})`;
-        }
+        taskElementHTML += `<b>Due Date:</b> ${dueDate}<br>`;
+    }
+    if (dueTime) {
+        taskElementHTML += `<b>Due Time:</b> ${dueTime}<br>`;
     }
     taskElementHTML += `</p><br>`;
     taskElementHTML += '<button class="edit-button">Edit</button>';
@@ -257,20 +254,13 @@ async function openEditForm(taskID) {
 
                 const taskForm = popup.document.getElementById("edit-form");
                 if (taskForm) {
-                    taskForm.addEventListener("submit", function(event) {
+                    taskForm.addEventListener("submit", async function (event) {
                         event.preventDefault();
-
-                        const updatedData = {
-                            task_name: popup.document.getElementById('task_name').value || '',
-                            task_description: popup.document.getElementById('task_description').value || '',
-                            due_date: popup.document.getElementById('due_date').value || '',
-                            due_time: popup.document.getElementById('due_time').value || '',
-                            task_status: popup.document.getElementById("task_status").value || ''
-                        };
-
+                        const updatedData = new FormData(this);
                         console.log("Submitting updated data:", updatedData);
 
-                        updateTask(taskID, updatedData);
+                        await updateTask(taskID, updatedData);
+                        await fetchTasksAndDisplay();
                         popup.close();
                     });
                 } else {
