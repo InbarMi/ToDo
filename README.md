@@ -14,3 +14,4 @@ To start the server, open the terminal in the folder named `back-end` and run th
 
 ```node app.js```
 
+On a browser, navigate to http://localhost:8080 to use the application.
