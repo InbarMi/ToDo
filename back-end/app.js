@@ -7,7 +7,7 @@
 // command to run from back-end folder: node app.js
 
 // import required modules
-const express = require("express"); // creates the server and handles routing, middleware and HTTP requests
+const express = require("express"); // module that creates the server and handles routing, middleware and HTTP requests
 const morgan = require("morgan"); // middleware for logging HTTP requests
 const bodyParser = require('body-parser'); // middleware to parse incoming request bodies
 const cors = require("cors"); // middleware to enable CORS to handle requests from different origins

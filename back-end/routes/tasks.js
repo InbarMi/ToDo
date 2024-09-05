@@ -1,10 +1,17 @@
+/* File: back-end/routes/tasks.js
+ * Description: This file organizes all routes for task management
+ * Author: Inbar Milstein
+ * Date: Summer 2024
+ */
+
+// setup and imports
 let express = require('express');
 let router = express.Router();
 const db = require("./../db");
-const {query} = require("express");
 
 /**
- * POST route
+ * POST  /add_task
+ * Adds a new task to the database. Expects task details in the request body
  */
 router.post("/add_task",async function(req,res) {
     try {
@@ -35,7 +42,8 @@ router.post("/add_task",async function(req,res) {
 });
 
 /**
- * GET all tasks route
+ * GET /tasks
+ * Retrieves all tasks from the database
  */
 router.get("/tasks", async function(req, res) {
     try {
@@ -52,7 +60,8 @@ router.get("/tasks", async function(req, res) {
 });
 
 /**
- * GET task by id
+ * GET tasks/:tasksID
+ * Retrieves a specific task by its ID
  */
 router.get("/tasks/:taskID", async function(req, res) {
     const taskID = req.params.taskID;
@@ -72,7 +81,8 @@ router.get("/tasks/:taskID", async function(req, res) {
 });
 
 /**
- * UPDATE a single task
+ * UPDATE /update_task/:task_id
+ * Updates an existing task by its ID. Expects updated task details in the request body
  */
 router.put("/update_task/:task_id", async function(req, res) {
     const taskName = req.body.task_name;
