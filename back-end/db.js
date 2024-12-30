@@ -237,10 +237,48 @@ async function updateTask(taskId, taskName, taskDescription, dueDate, dueTime, t
     });
 }
 
+async function deleteTasksByStatus(status) {
+    console.log("Entering deleteTasksByStatus function");
+    return new Promise((resolve, reject) => {
+        db.serialize(() => {
+            console.log("Attempting to delete tasks with status: ", status);
+            const sql = `DELETE FROM tasks WHERE task_status = ?;`;
+            db.run(sql, [status], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    console.log(`Deleted ${this.changes} tasks with status ${status}`);
+                    resolve(this.changes);
+                }
+            });
+        });
+    });
+}
+
+async function deleteTaskByID(taskID) {
+    console.log("Entering deleteTaskByID function");
+    return new Promise((resolve, reject) => {
+        db.serialize(() => {
+            console.log("Attempting to delete task with ID: ", taskID);
+            const sql = `DELETE FROM tasks WHERE task_id = ?;`;
+            db.run(sql, [taskID], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    console.log(`Deleted ${this.changes} tasks with ID ${taskID}`);
+                    resolve(this.changes);
+                }
+            });
+        });
+    });
+}
+
 // these functions will be available from other files that import this module
 module.exports = {
     insertNewTask,
     getAllTasks,
     updateTask,
-    getTaskById
+    getTaskById,
+    deleteTasksByStatus,
+    deleteTaskByID
 };

@@ -4,13 +4,19 @@
  * Date: Summer 2024
  */
 // Global constants and variables
-const addTaskBtn = document.getElementById("add-task-button");
 const inputField = document.getElementById("task-input-field");
 
 // Initialize event listeners
+
 // Load all tasks on page loading
 document.addEventListener("DOMContentLoaded", async function() {
     console.log("page loaded");
+
+    const addTaskBtn = document.getElementById("add-task-button");
+    const clearToDoBtn = document.getElementById("clearToDoListBtn");
+    const clearInProgressBtn = document.getElementById("clearInProgressBtn");
+    const clearCompleteBtn = document.getElementById("clearCompleteBtn");
+
     await fetchTasksAndDisplay();
     // Display new task form on click of addTask button or on keyboard "Enter" from task input field
     addTaskBtn.addEventListener("click", openForm);
@@ -20,6 +26,9 @@ document.addEventListener("DOMContentLoaded", async function() {
             openForm();
         }
     });
+    clearToDoBtn.addEventListener("click", () => {clearList("todo");});
+    clearInProgressBtn.addEventListener("click", () => {clearList("inprogress");});
+    clearCompleteBtn.addEventListener("click", () => {clearList("complete");});
 });
 
 /**
@@ -89,7 +98,7 @@ async function addNewTask(taskData, popup) {
             popup.close();
             await fetchTasksAndDisplay();
         } else {
-            throw new Error('Failed to submit form');
+            console.error('Failed to submit form');
         }
     } catch (error) {
         console.error(error);
@@ -119,7 +128,7 @@ async function fetchTasksAndDisplay() {
         }
         else
         {
-            throw new Error("failed to fetch task data.")
+            console.error("failed to fetch task data.")
         }
     }
     catch (error)
@@ -179,6 +188,10 @@ function displayTasks(listOfTasks) {
             expandArrow.textContent = newTaskItem.classList.contains('expanded') ? '▲' : '▼';
         });
 
+        const deleteTaskBtn = newTaskItem.querySelector(".delete-task");
+        deleteTaskBtn.addEventListener("click", () => { deleteTask(taskID);
+        });
+
         const editBtn = newTaskItem.querySelector(".edit-button");
         editBtn.addEventListener("click", () => {
             openEditForm(taskID)
@@ -203,6 +216,7 @@ function setTaskItemDetails(taskElement, task) {
             <div class="task-summary">
                 <p class="task-name">${taskName}</p>
                 <button class="expand-arrow">▼</button>
+                <button class="delete-task">✖</button>
             </div>
             <div class="task-details">
             <hr>`;
@@ -232,7 +246,7 @@ async function openEditForm(taskID) {
         // get editForm.html content
         const response = await fetch('./editForm.html');
         if (!response.ok) {
-            throw new Error('Network response failure ' + response.statusText);
+            console.error('Network response failure ' + response.statusText);
         }
         let htmlContent = await response.text();
 
@@ -249,7 +263,7 @@ async function openEditForm(taskID) {
             try {
                 const taskResponse = await fetch(`http://localhost:8080/tasks/${taskID}`);
                 if (!taskResponse.ok) {
-                    throw new Error('Failed to fetch task data ' + taskResponse.statusText);
+                    console.error('Failed to fetch task data ' + taskResponse.statusText);
                 }
                 const taskData = await taskResponse.json();
 
@@ -287,8 +301,7 @@ async function updateTask(taskID, updatedData) {
     const API_URL = `http://localhost:8080/update_task/${taskID}`;
     console.log("updatedData: ", updatedData);
 
-    try
-    {
+    try {
         const response = await fetch(API_URL, {
             method: "PUT",
             headers: {
@@ -298,13 +311,51 @@ async function updateTask(taskID, updatedData) {
         });
 
         if (!response.ok) {
-            throw new Error("Failed to update task");
+            console.error("Failed to update task");
         }
 
         console.log(`Successfully updated task ${taskID}`);
-    }
-    catch (error)
-    {
+    } catch (error) {
         console.error("Error updating task: ", error);
+    }
+}
+
+async function deleteTask(taskId) {
+    const API_URL = `http://localhost:8080/delete/id/${taskId}`;
+    try {
+        const response = await fetch(API_URL, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            console.error(`Failed to delete task with ID ${taskId}`);
+        }
+
+        console.log(`Successfully deleted task with ID ${taskId}`);
+
+        await fetchTasksAndDisplay();
+    } catch (error) {
+        console.error(`Error deleting task with ID ${taskId}`);
+    }
+}
+
+async function clearList(taskStatus) {
+    const API_URL = `http://localhost:8080/delete/status/${taskStatus}`;
+    console.log("Calling delete with status: ", taskStatus);
+    try {
+        const response = await fetch(API_URL, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            console.error("Failed to delete tasks");
+        }
+
+        console.log(`Successfully deleted ${taskStatus} tasks`);
+
+        // refresh page
+        await fetchTasksAndDisplay();
+    } catch (error) {
+        console.error("Error deleting tasks: ", error);
     }
 }

@@ -109,4 +109,36 @@ router.put("/update_task/:task_id", async function(req, res) {
     }
 });
 
+/**
+ * DELETE /delete/status/:taskStatus
+ * deletes all tasks of a given status
+ */
+router.delete("/delete/status/:taskStatus", async function(req, res) {
+    const status = req.params.taskStatus;
+    console.log("deleting tasks with status: ", status);
+    try {
+        const result = await db.deleteTasksByStatus(status);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(`Error deleting tasks of status: ${status}: `, error);
+        res.status(500).json({"error": "Internal Server Error"});
+    }
+})
+
+/**
+ * DELETE by id /delete/id/:taskID
+ * deletes a task with a given ID
+ */
+router.delete("/delete/id/:taskID", async function(req, res) {
+    const taskID = req.params.taskID;
+    console.log("deleting task with ID: ", taskID);
+    try {
+        const result = await db.deleteTaskByID(taskID);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(`Error deleting task with ID: ${taskID}: `, error);
+        res.status(500).json({"error": "Internal Server Error"});
+    }
+})
+
 module.exports = router;
