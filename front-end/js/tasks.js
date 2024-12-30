@@ -1,11 +1,18 @@
+/* File: front-end/js/tasks.js
+ * Description:
+ * Author: Inbar Milstein
+ * Date: Summer 2024
+ */
 // Global constants and variables
 const addTaskBtn = document.getElementById("add-task-button");
 const inputField = document.getElementById("task-input-field");
 
 // Initialize event listeners
+// Load all tasks on page loading
 document.addEventListener("DOMContentLoaded", async function() {
     console.log("page loaded");
     await fetchTasksAndDisplay();
+    // Display new task form on click of addTask button or on keyboard "Enter" from task input field
     addTaskBtn.addEventListener("click", openForm);
     inputField.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
@@ -16,16 +23,17 @@ document.addEventListener("DOMContentLoaded", async function() {
 });
 
 /**
- * Open popup to enter new task info
+ * Display popup form for adding a new task
  */
 async function openForm() {
+    // get task name if provided
     const taskName = inputField.value;
 
     try {
         // get popupForm.html content
         const response = await fetch('./popupForm.html');
         if (!response.ok) {
-            throw new Error('Network response failure ' + response.statusText);
+            console.error('Network response failure ' + response.statusText);
         }
         let htmlContent = await response.text();
 
