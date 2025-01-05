@@ -67,6 +67,7 @@ async function openForm() {
 
                     const formData = new FormData(this);
                     addNewTask(formData, popup);
+                    inputField.value = "";
                 });
             } else {
                 console.error("Failed to fetch the popup form");
@@ -163,8 +164,9 @@ function displayTasks(listOfTasks) {
 
         // create new li element for each task
         const newTaskItem = document.createElement("li");
-        newTaskItem.setAttribute("class", "task-item")
+        newTaskItem.setAttribute("class", "task-item");
         newTaskItem.setAttribute("data-task-id", taskID);
+        newTaskItem.setAttribute("data-task-status", taskStatus);
 
         setTaskItemDetails(newTaskItem, task);
 
@@ -188,8 +190,10 @@ function displayTasks(listOfTasks) {
             expandArrow.textContent = newTaskItem.classList.contains('expanded') ? '▲' : '▼';
         });
 
-        const deleteTaskBtn = newTaskItem.querySelector(".delete-task");
-        deleteTaskBtn.addEventListener("click", () => { deleteTask(taskID);
+        const changeStatusBtn = newTaskItem.querySelector(".change-status");
+
+        changeStatusBtn.addEventListener("click", () => {
+            toggleStatusDropdown(newTaskItem);
         });
 
         const editBtn = newTaskItem.querySelector(".edit-button");
@@ -211,28 +215,37 @@ function setTaskItemDetails(taskElement, task) {
     const taskDescription = task.task_description;
     const dueDate = task.due_date;
     const dueTime = task.due_time;
+    const taskStatus = task.task_status;
 
     let taskElementHTML = `
             <div class="task-summary">
-                <p class="task-name">${taskName}</p>
+                <button class="change-status">◯</button>
+                <p><span class="task-name">${taskName}</span></p>
                 <button class="expand-arrow">▼</button>
-                <button class="delete-task">✖</button>
             </div>
             <div class="task-details">
             <hr>`;
 
     if (taskDescription) {
-        taskElementHTML += `<p><b>Description:</b> ${taskDescription}</span><br>`;
+        taskElementHTML += `<p></p><span class="task-description"><b>Description:</b> ${taskDescription}</span><br>`;
     }
     if (dueDate) {
-        taskElementHTML += `<b>Due Date:</b> ${dueDate}<br>`;
+        taskElementHTML += `<span class="due-date"><b>Due Date:</b> ${dueDate}</span><br>`;
     }
     if (dueTime) {
-        taskElementHTML += `<b>Due Time:</b> ${dueTime}<br>`;
+        taskElementHTML += `<b><span class="due-time">Due Time:</b> ${dueTime}</span><br>`;
     }
     taskElementHTML += `</p><br>`;
-    taskElementHTML += '<button class="edit-button">Edit</button>';
-    taskElementHTML += `</div>`;
+    taskElementHTML += '<button class="edit-button">Edit</button></div>';
+    taskElementHTML += `
+        <div class="status-popup" style="display: none;">
+            <label for="status-select">Change status:</label>
+            <select class="status-select">
+                <option value="todo">To Do</option>
+                <option value="inprogress">In Progress</option>
+                <option value="complete">Complete</option>
+            </select>
+        </div>`;
 
     taskElement.innerHTML = taskElementHTML;
 }
@@ -317,6 +330,74 @@ async function updateTask(taskID, updatedData) {
         console.log(`Successfully updated task ${taskID}`);
     } catch (error) {
         console.error("Error updating task: ", error);
+    }
+}
+
+function toggleStatusDropdown(taskElement) {
+    const statusPopup = taskElement.querySelector(".status-popup");
+    const selectMenu = statusPopup.querySelector(".status-select");
+
+    // set initial value for the menu
+    selectMenu.value = taskElement.getAttribute("data-task-status");
+
+    const currentDisplay = statusPopup.style.display;
+
+    // toggle the dropdown visibility
+    statusPopup.style.display = (currentDisplay === "none" || currentDisplay === "") ? "block" : "none";
+
+    selectMenu.addEventListener("focus", () => {
+        statusPopup.style.display = "block";
+    });
+
+    selectMenu.addEventListener("blur", () => {
+        statusPopup.style.display = "none";
+    });
+
+    selectMenu.addEventListener("change", (event) => {
+        if (!statusPopup.contains(event.target) && event.target !== selectMenu) {
+            statusPopup.style.display = "none";
+        }
+    });
+
+    // if the use selects new status, move task
+    selectMenu.addEventListener("change", (event) => changeStatus(event, taskElement));
+}
+
+async function changeStatus(event, taskElement) {
+    const selectedStatus = event.target.value;
+    const taskID = taskElement.getAttribute("data-task-id");
+    console.log("New status selected:", selectedStatus);
+    try {
+        const task = await getTask(taskID);
+
+        const updatedData = {
+            task_name: task.task_name,
+            task_status: selectedStatus,
+            task_description: task.task_description,
+            due_date: task.due_date,
+            due_time: task.due_time
+        };
+
+        const response = await updateTask(taskID, updatedData);
+        await fetchTasksAndDisplay();
+
+    } catch (error) {
+        console.error("Error moving task: ", error);
+    }
+}
+
+async function getTask(taskID) {
+    const API_URL = `http://localhost:8080/tasks/${taskID}`;
+    try {
+        const response = await fetch(API_URL);
+
+        if (!response.ok) {
+            console.error(`Error getting a task with ID: ${taskID}`)
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching task: ", error);
     }
 }
 
