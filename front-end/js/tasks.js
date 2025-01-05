@@ -192,8 +192,18 @@ function displayTasks(listOfTasks) {
 
         const changeStatusBtn = newTaskItem.querySelector(".change-status");
 
-        changeStatusBtn.addEventListener("click", () => {
+        changeStatusBtn.addEventListener("focus", () => {
             toggleStatusDropdown(newTaskItem);
+        });
+
+        changeStatusBtn.addEventListener("blur", (event) => {
+            // Delay the check to check that blur doesn't immediately close if focus moves to dropdown menu
+            setTimeout(() => {
+                const statusPopup = newTaskItem.querySelector(".status-popup");
+                if (!statusPopup.contains(document.activeElement)) {
+                    statusPopup.style.display = "none";
+                }
+            }, 100);
         });
 
         const editBtn = newTaskItem.querySelector(".edit-button");
