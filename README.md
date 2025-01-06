@@ -18,7 +18,7 @@ Follow these steps to run the web application on your local machine:
 Clone this repository to your local machine in the desired directory:
 
 ```
-git clone https://github.com/yourusername/your-repo
+git clone https://github.com/InbarMi/ToDo.git
 ```
 
 ### 2. Install Node.js and npm 
