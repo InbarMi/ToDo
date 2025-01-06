@@ -250,7 +250,8 @@ function setTaskItemDetails(taskElement, task) {
         taskElementHTML += `<p></p><span class="task-description"><b>Description:</b> ${taskDescription}</span><br>`;
     }
     if (dueDate) {
-        taskElementHTML += `<span class="due-date"><b>Due Date:</b> ${dueDate}</span><br>`;
+        const formattedDate = formatDateToMMDDYY(dueDate);
+        taskElementHTML += `<span class="due-date"><b>Due Date:</b> ${formattedDate}</span><br>`;
     }
     if (dueTime) {
         taskElementHTML += `<b><span class="due-time">Due Time:</b> ${dueTime}</span><br>`;
@@ -269,6 +270,11 @@ function setTaskItemDetails(taskElement, task) {
         </div>`;
 
     taskElement.innerHTML = taskElementHTML;
+}
+
+function formatDateToMMDDYY(sqlDate) {
+    const [year, month, day] = sqlDate.split('-');
+    return `${month}/${day}/${year.slice(2)}`;
 }
 
 /**
