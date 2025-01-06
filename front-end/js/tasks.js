@@ -217,6 +217,16 @@ function displayTasks(listOfTasks) {
                 });
         });
 
+        const deleteTaskBtn = newTaskItem.querySelector(".delete-task");
+        deleteTaskBtn.addEventListener("click", () => {
+            deleteTask(taskID).then(r => {
+                console.log("task deleted successfully");
+            })
+            .catch((error) => {
+                console.error("Error deleting task");
+            });
+        });
+
     });
 }
 
@@ -246,7 +256,8 @@ function setTaskItemDetails(taskElement, task) {
         taskElementHTML += `<b><span class="due-time">Due Time:</b> ${dueTime}</span><br>`;
     }
     taskElementHTML += `</p><br>`;
-    taskElementHTML += '<button class="edit-button">Edit</button></div>';
+    taskElementHTML += '<div class="detail-buttons"><button class="edit-button">Edit</button>';
+    taskElementHTML += '<button class="delete-task">Delete</button></div></div>';
     taskElementHTML += `
         <div class="status-popup" style="display: none;">
             <label for="status-select">Change status:</label>

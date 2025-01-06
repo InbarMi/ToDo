@@ -5,6 +5,8 @@ This is a task management web application. It includes the following features:
 - Add tasks to one of three columns: To-Do, In-Progress, Complete.
 - Keep track of details including: description, due-date and due-time.
 - Modify details after posting the task.
+- Clear the lists of tasks
+- Move the task to a different status column
 
 ## Getting Started
 
