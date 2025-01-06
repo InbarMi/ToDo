@@ -4,14 +4,14 @@
 --
 -- -- add your tables structure
 --
--- DROP TABLE IF EXISTS tasks;
---
--- CREATE TABLE tasks
--- (
---     id                      INTEGER PRIMARY KEY AUTOINCREMENT,
---     name                    TEXT NOT NULL,
---     description             TEXT,
---     due_date                DATE,
---     due_time                TIME,
---     status                  TEXT NOT NULL
--- );
+DROP TABLE IF EXISTS tasks;
+
+CREATE TABLE tasks
+(
+    task_id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_name               TEXT NOT NULL,
+    task_description        TEXT,
+    due_date                DATE,
+    due_time                TIME,
+    task_status             TEXT NOT NULL
+);

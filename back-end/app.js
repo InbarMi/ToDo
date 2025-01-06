@@ -12,6 +12,7 @@ const morgan = require("morgan"); // middleware for logging HTTP requests
 const bodyParser = require('body-parser'); // middleware to parse incoming request bodies
 const cors = require("cors"); // middleware to enable CORS to handle requests from different origins
 const path = require('path'); // node.js module to work with file and directory paths
+process.env.NODE_ENV = 'development';  // "test" or "development" environment
 
 // create instance of an Express application
 const app = express();
