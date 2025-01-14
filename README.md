@@ -55,5 +55,6 @@ node app.js
 
 Once the server is running, you can navigate to http://localhost:8080 on a browser.
 This should open the application and allow you to use it.
+Enjoy!
 
 
