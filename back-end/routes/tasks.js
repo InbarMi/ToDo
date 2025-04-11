@@ -15,13 +15,14 @@ const db = require("./../db");
  */
 router.post("/add_task",async function(req,res) {
     try {
+        // get all task info from request
         const taskName = req.body.task_name;
         const taskDescription = req.body.task_description;
         const dueDate = req.body.due_date;
         const dueTime = req.body.due_time;
         const status = req.body.task_status;
 
-
+        // create new task object
         let newTask = {
             task_name: taskName,
             task_description: taskDescription,
@@ -85,6 +86,7 @@ router.get("/tasks/:taskID", async function(req, res) {
  * Updates an existing task by its ID. Expects updated task details in the request body
  */
 router.put("/update_task/:task_id", async function(req, res) {
+    // get task update info from request
     const taskName = req.body.task_name;
     const taskDescription = req.body.task_description;
     const dueDate = req.body.due_date;
@@ -101,6 +103,7 @@ router.put("/update_task/:task_id", async function(req, res) {
             taskStatus,
             taskID
         });
+
         const result = await db.updateTask(taskID, taskName, taskDescription, dueDate, dueTime, taskStatus);
         res.status(200).json(result);
     } catch (error) {
