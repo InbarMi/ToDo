@@ -12,6 +12,8 @@ This is a task management web application. It includes the following features:
 - Move the task to a different status column.
 - Tasks persist between sessions.
 
+![To-Do App Demo](resources/todo_recording-gif.gif)
+
 ## Getting Started
 
 Follow these steps to run the web application on your local machine:
