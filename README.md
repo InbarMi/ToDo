@@ -1,13 +1,16 @@
 # To-Do: Task Management
+
+> **Note**: This app is intended to run locally and does not include user login or cloud-based storage. It was built to learn and demonstrate full-stack structure and task management logic.
+
 ## Overview:
 
 This is a task management web application. It includes the following features:
 - Add tasks to one of three columns: To-Do, In-Progress, Complete.
 - Keep track of details including: description, due-date and due-time.
 - Modify details after posting the task.
-- Clear the lists of tasks
-- Move the task to a different status column
-- Tasks are saved and remembered even after the app or server is closed and restarted.
+- Clear the lists of tasks.
+- Move the task to a different status column.
+- Tasks persist between sessions.
 
 ## Getting Started
 
